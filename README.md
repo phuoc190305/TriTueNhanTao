@@ -15,12 +15,12 @@ III. Đi sâu vào thuật toán
 - Ví dụ về ma trận với 6 đỉnh (A-F).
 + Đỉnh A (bậc 3), B (bậc 3), C (bậc 4), D (bậc 3), E (bậc 1), F (bậc 2).
 + Matran của đồ thị trên:
-          0 1 1 0 0 1  
-          1 0 1 1 0 0
-          1 1 0 1 0 1
-          0 1 1 0 1 0
-          0 0 0 1 0 0
-          1 0 1 0 0 0
+          - 0 1 1 0 0 1  
+          - 1 0 1 1 0 0
+          - 1 1 0 1 0 1
+          - 0 1 1 0 1 0
+          - 0 0 0 1 0 0
+          - 1 0 1 0 0 0
 2. Output
 - Đầu ra ở phiên bản Graph-Coloring.py sẽ là tên các đỉnh kèm theo đó là tên màu đã được tô.
 - Đầu ra ở phiên bản Graph-Coloring(File).py Graph-Coloring(View Graphic).py và  sẽ là đồ thị gồm các đỉnh và cạnh tương ứng với bậc và đã được tô màu các đỉnh.
