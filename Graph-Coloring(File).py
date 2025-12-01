@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, simpledialog
+from tkinter import ttk, filedialog, messagebox
 import turtle
 import math
 
@@ -15,6 +15,7 @@ def doc_ma_tran(ten_file):
                     matrix.append(row)
         return matrix
     except Exception as e:
+        print(f"Lỗi đọc file: {e}")
         return None
 
 def thuat_toan_welsh_powell(G, nodes, degrees):
@@ -41,60 +42,54 @@ def thuat_toan_welsh_powell(G, nodes, degrees):
                 colorDict[neighbor].remove(assigned)
     return sorted_nodes, final_solution
 
-# --- PHẦN 2: GIAO DIỆN GUI & TURTLE ---
+# --- PHẦN 2: GIAO DIỆN GUI & TURTLE (ĐÃ SỬA LỖI CANH CHỈNH) ---
 class GraphColoringApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Minh Họa Tô Màu Đồ Thị - Welsh Powell Pro")
-        self.root.geometry("1100x700")
+        self.root.title("Minh Họa Tô Màu Đồ Thị - Welsh Powell")
+        self.root.geometry("1000x650") # Tăng chiều cao cửa sổ lên chút
 
         # --- Layout ---
-        left_frame = tk.Frame(root, width=350, bg="#f0f0f0")
+        left_frame = tk.Frame(root, width=320, bg="#f0f0f0")
         left_frame.pack(side=tk.LEFT, fill=tk.Y)
         
-        # Frame phải chứa Canvas (Thêm padding để canvas nằm gọn bên trong)
-        right_frame = tk.Frame(root, bg="white", padx=10, pady=10)
+        # Frame chứa Canvas Turtle (thêm padding để không bị sát viền)
+        right_frame = tk.Frame(root, bg="white", padx=20, pady=20)
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
-        # 1. BẢNG ĐIỀU KHIỂN
+        # 1. Các Widget bên Trái
         tk.Label(left_frame, text="BẢNG ĐIỀU KHIỂN", font=("Arial", 14, "bold"), bg="#f0f0f0").pack(pady=(20, 10))
         
-        btn_frame = tk.Frame(left_frame, bg="#f0f0f0")
-        btn_frame.pack(pady=5, fill=tk.X, padx=20)
+        self.btn_load = tk.Button(left_frame, text="📂 Chọn File Ma trận", command=self.load_file, font=("Arial", 11), bg="#4CAF50", fg="white", cursor="hand2")
+        self.btn_load.pack(pady=5, ipadx=15, ipady=5)
 
-        self.btn_load = tk.Button(btn_frame, text="📂 Đọc File", command=self.load_file, font=("Arial", 10), bg="#4CAF50", fg="white", width=12)
-        self.btn_load.grid(row=0, column=0, padx=5, pady=5)
+        self.btn_run = tk.Button(left_frame, text="▶ Chạy Tô Màu", command=self.start_coloring, state=tk.DISABLED, font=("Arial", 11), bg="#2196F3", fg="white", cursor="hand2")
+        self.btn_run.pack(pady=5, ipadx=25, ipady=5)
 
-        self.btn_save = tk.Button(btn_frame, text="💾 Xuất File", command=self.save_to_file, state=tk.DISABLED, font=("Arial", 10), bg="#FF9800", fg="white", width=12)
-        self.btn_save.grid(row=0, column=1, padx=5, pady=5)
-
-        self.btn_edit = tk.Button(left_frame, text="✏️ Chỉnh sửa Ma trận / Đỉnh", command=self.open_editor, state=tk.DISABLED, font=("Arial", 11, "bold"), bg="#607D8B", fg="white")
-        self.btn_edit.pack(pady=5, ipadx=10, fill=tk.X, padx=25)
-
-        self.btn_run = tk.Button(left_frame, text="▶ CHẠY TÔ MÀU", command=self.start_coloring, state=tk.DISABLED, font=("Arial", 12, "bold"), bg="#2196F3", fg="white")
-        self.btn_run.pack(pady=15, ipadx=20, ipady=5, fill=tk.X, padx=25)
-
-        # Treeview
+        # Bảng (Treeview)
         columns = ("node", "degree", "color")
         self.tree = ttk.Treeview(left_frame, columns=columns, show="headings", height=20)
         self.tree.heading("node", text="Đỉnh")
         self.tree.heading("degree", text="Bậc")
-        self.tree.heading("color", text="Màu")
+        self.tree.heading("color", text="Màu (Kết quả)")
+        
         self.tree.column("node", width=60, anchor="center")
         self.tree.column("degree", width=60, anchor="center")
-        self.tree.column("color", width=100, anchor="center")
-        self.tree.pack(pady=10, padx=15, fill=tk.BOTH, expand=True)
+        self.tree.column("color", width=120, anchor="center")
+        self.tree.pack(pady=20, padx=15, fill=tk.BOTH, expand=True)
 
-        # 2. Setup Turtle
+        # 2. Setup Turtle bên Phải
         self.canvas = tk.Canvas(right_frame, bg="white", highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
         self.turtle_screen = turtle.TurtleScreen(self.canvas)
         self.turtle_screen.bgcolor("white")
+        # Khởi tạo con rùa vẽ NGAY TẠI ĐÂY
         self.t = turtle.RawTurtle(self.turtle_screen) 
         self.t.speed(0)
         self.t.hideturtle()
 
+        # Biến lưu trữ dữ liệu
         self.G = []
         self.nodes = []
         self.degrees = []
@@ -109,14 +104,14 @@ class GraphColoringApp:
         if not file_path: return
 
         matrix = doc_ma_tran(file_path)
-        if matrix:
-            self.update_graph_data(matrix)
-
-    def update_graph_data(self, matrix):
-        if not matrix: return
+        if matrix is None or len(matrix) == 0:
+            messagebox.showerror("Lỗi", "File không hợp lệ hoặc rỗng!")
+            return
+        
+        # Kiểm tra ma trận vuông
         num_rows = len(matrix)
         if any(len(row) != num_rows for row in matrix):
-             messagebox.showerror("Lỗi", "Ma trận không vuông.")
+             messagebox.showerror("Lỗi", "Ma trận kề phải là ma trận vuông!")
              return
 
         self.G = matrix
@@ -125,37 +120,28 @@ class GraphColoringApp:
         self.degrees = [sum(row) for row in self.G]
 
         self.tree.delete(*self.tree.get_children())
-        self.t.clear()
+        self.t.clear() # self.t đã được khởi tạo trong __init__, không bị lỗi nữa
         
         for i, n in enumerate(self.nodes):
             self.tree.insert("", tk.END, iid=n, values=(n, self.degrees[i], "Chờ..."))
 
         self.draw_initial_graph()
-        
         self.btn_run.config(state=tk.NORMAL)
-        self.btn_edit.config(state=tk.NORMAL)
-        self.btn_save.config(state=tk.NORMAL)
 
-    # --- ĐOẠN CODE SỬA LỖI LỆCH HÌNH ---
     def draw_initial_graph(self):
         self.t.clear()
         self.positions = {}
+        # --- SỬA LỖI CANH CHỈNH TẠI ĐÂY ---
+        radius = 160  # Giảm bán kính một chút
+        offset_y = -50 # Dời tâm vòng tròn xuống 50 đơn vị
         total = len(self.nodes)
         
         if total == 0: return
 
-        # --- TÙY CHỈNH TỌA ĐỘ MỚI Ở ĐÂY ---
-        # 1. Giảm radius: Lúc trước là 180-220, giờ giảm xuống cố định 150 cho gọn
-        radius = 150 
-        
-        # 2. Dời tâm xuống thấp hơn nữa: 
-        # Trong turtle: Y dương là lên trên, Y âm là xuống dưới.
-        # Ta đặt -80 để kéo hẳn đồ thị xuống dưới tâm màn hình.
-        offset_y = -80 
-
+        # Tính tọa độ với offset
         for i, n in enumerate(self.nodes):
             angle = (2 * math.pi * i) / total
-            # Tính tọa độ
+            # Dời trục y xuống
             x = radius * math.cos(angle)
             y = radius * math.sin(angle) + offset_y 
             self.positions[n] = (x, y)
@@ -172,84 +158,39 @@ class GraphColoringApp:
                     self.t.pendown()
                     self.t.goto(self.positions[v])
 
-        # Vẽ đỉnh
+        # Vẽ đỉnh trắng
         for n in self.nodes:
             self.draw_node(n, "white")
-    # -----------------------------------
 
     def draw_node(self, node_name, fill_color):
         x, y = self.positions[node_name]
         self.t.penup()
+        # Điều chỉnh vị trí vẽ chấm tròn
         self.t.goto(x, y + 5) 
         self.t.pendown()
         
         text_color = "black"
         if fill_color == "white":
-            self.t.dot(44, "black")
-            self.t.dot(40, "white")
+            self.t.dot(44, "black") # Viền
+            self.t.dot(40, "white") # Nền trắng
         else:
-            self.t.dot(42, fill_color)
+            self.t.dot(42, fill_color) # Màu tô
+            # Chọn màu chữ tương phản
             if fill_color in ["red", "blue", "green", "purple", "brown", "magenta"]:
                 text_color = "white"
 
+        # Viết tên đỉnh
         self.t.penup()
+        # Điều chỉnh vị trí text cho cân giữa chấm tròn
         self.t.goto(x, y - 7) 
         self.t.color(text_color)
+        # Dùng font nhỏ hơn xíu để gọn
         self.t.write(node_name, align="center", font=("Arial", 11, "bold"))
-
-    def open_editor(self):
-        if self.is_running: return
-        editor_win = tk.Toplevel(self.root)
-        editor_win.title("Chỉnh sửa Ma trận")
-        editor_win.geometry("500x500")
-
-        tk.Label(editor_win, text="Chỉnh sửa ma trận kề bên dưới:", font=("Arial", 10, "bold")).pack(pady=5)
-        txt_editor = tk.Text(editor_win, font=("Consolas", 12), width=40, height=15)
-        txt_editor.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
-
-        content = ""
-        for row in self.G:
-            line = " ".join(str(x) for x in row)
-            content += line + "\n"
-        txt_editor.insert(tk.END, content)
-
-        def apply_changes():
-            raw_text = txt_editor.get("1.0", tk.END).strip()
-            if not raw_text: return
-            new_matrix = []
-            try:
-                lines = raw_text.split('\n')
-                for line in lines:
-                    parts = line.strip().replace(',', ' ').split()
-                    if not parts: continue
-                    row = [int(x) for x in parts]
-                    new_matrix.append(row)
-                self.update_graph_data(new_matrix)
-                editor_win.destroy()
-                messagebox.showinfo("Thành công", "Đã cập nhật đồ thị mới!")
-            except Exception:
-                messagebox.showerror("Lỗi", "Dữ liệu không hợp lệ")
-
-        tk.Button(editor_win, text="Cập nhật & Vẽ lại", command=apply_changes, bg="#2196F3", fg="white").pack(pady=10)
-
-    def save_to_file(self):
-        if not self.G: return
-        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
-        if not file_path: return
-        try:
-            with open(file_path, 'w') as f:
-                for row in self.G:
-                    line = " ".join(str(x) for x in row)
-                    f.write(line + "\n")
-            messagebox.showinfo("Thành công", "Đã lưu file!")
-        except Exception as e:
-            messagebox.showerror("Lỗi", str(e))
 
     def start_coloring(self):
         self.sorted_nodes, self.final_colors = thuat_toan_welsh_powell(self.G, self.nodes, self.degrees)
         self.btn_run.config(state=tk.DISABLED)
         self.btn_load.config(state=tk.DISABLED)
-        self.btn_edit.config(state=tk.DISABLED)
         self.is_running = True
         self.animate_step(0)
 
@@ -258,21 +199,24 @@ class GraphColoringApp:
             messagebox.showinfo("Hoàn tất", "Đã tô màu xong!")
             self.btn_run.config(state=tk.DISABLED)
             self.btn_load.config(state=tk.NORMAL)
-            self.btn_edit.config(state=tk.NORMAL)
             self.is_running = False
             return
 
         current_node = self.sorted_nodes[index]
         color = self.final_colors[current_node]
 
+        # 1. Cập nhật hình vẽ
         self.draw_node(current_node, color)
 
+        # 2. Cập nhật bảng
         d = self.degrees[self.nodes.index(current_node)]
         self.tree.item(current_node, values=(current_node, d, color))
+        
         self.tree.selection_set(current_node)
         self.tree.focus(current_node)
 
-        self.root.after(800, lambda: self.animate_step(index + 1))
+        # Chạy bước tiếp theo sau 1s
+        self.root.after(1000, lambda: self.animate_step(index + 1))
 
 if __name__ == "__main__":
     root = tk.Tk()
