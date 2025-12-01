@@ -23,4 +23,4 @@ III. Đi sâu vào thuật toán
           1 0 1 0 0 0
 * Output
 - Đầu ra ở phiên bản Graph-Coloring.py sẽ là tên các đỉnh kèm theo đó là màu đã được tô.
-- Đầu ra ở phiên bản Graph-Coloring.py sẽ là đồ thị gồm các đỉnh và cạnh tương ứng với bậc và đã được tô màu các đỉnh
+- Đầu ra ở phiên bản Graph-Coloring(File).py Graph-Coloring(File).py và  sẽ là đồ thị gồm các đỉnh và cạnh tương ứng với bậc và đã được tô màu các đỉnh
