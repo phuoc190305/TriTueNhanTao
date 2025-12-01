@@ -33,11 +33,11 @@ B5: Quay lại bước 1.
 III. Code
 1. Thư viện sử dụng
 - tkinter: Thư viện tiêu chuẩn để tạo cửa sổ ứng dụng, nút bấm, bảng...
-- turtle: Thư viện đồ họa "rùa", thường dùng để dạy lập trình nhưng ở đây được dùng để vẽ đồ thị (đỉnh và cạnh) một cách trực quan.
-- math: Dùng để tính toán tọa độ (sin, cos) khi sắp xếp các đỉnh đồ thị thành hình tròn.
+- turtle: Thư viện đồ họa.
+- math: Dùng để tính toán.
 2. Các hàm sử dụng
 - def doc_ma_tran(ten_file):
-+ Chức năng: Đọc file văn bản chứa ma trận kề (adjacency matrix).
++ Chức năng: Đọc file văn bản chứa ma trận.
 + Hoạt động:
           Mở file, đọc từng dòng.
           replace(',', ' '): Xử lý trường hợp file dùng dấu phẩy hoặc dấu cách để ngăn cách số.
@@ -45,22 +45,22 @@ III. Code
           Trả về một mảng 2 chiều (list of lists) biểu diễn đồ thị.
 - thuat_toan_welsh_powell(G, nodes, degrees):
 + Chức năng: Thực hiện thuật toán tô màu.
-+ Quy trình (Logic cốt lõi):
++ Quy trình:
           Chuẩn bị màu: Tạo danh sách các màu cơ bản (đỏ, xanh, vàng...).
-          Sắp xếp: sorted_nodes = sorted(...). Bước quan trọng nhất của Welsh-Powell là xếp các đỉnh có bậc (degree) từ cao xuống thấp. Đỉnh nào nối với nhiều đỉnh khác nhất sẽ được tô trước.
+          Sắp xếp: sorted_nodes = sorted(...). Xếp các đỉnh có bậc từ cao xuống thấp. Đỉnh nào có bậc lớn nhất sẽ được tô trước.
           Duyệt và Tô màu:
                     Duyệt qua từng đỉnh trong danh sách đã sắp xếp.
                     Lấy màu đầu tiên trong danh sách màu khả dụng của đỉnh đó.
                     Sau khi tô màu cho đỉnh A (ví dụ màu Đỏ), thuật toán sẽ đi tìm tất cả hàng xóm của A và xóa màu Đỏ khỏi danh sách màu khả dụng của hàng xóm (để hàng xóm không bị tô trùng màu).
-                    Trả về: Danh sách đỉnh đã sắp xếp và từ điển kết quả tô màu.
+                    Trả về: Danh sách đỉnh đã sắp xếp và hiển thị kết quả tô màu.
 3. Class giao diện (GraphColoringApp)
 - __init__(self, root):
 + Thiết lập cửa sổ chính 1100x700 pixel.
 + Chia Layout:
           Trái (left_frame): Chứa các nút bấm (Đọc file, Xuất file, Chạy...), và bảng Treeview (hiển thị danh sách đỉnh, bậc, màu).
-          Phải (right_frame): Chứa Canvas. Quan trọng: turtle.TurtleScreen(self.canvas) giúp nhúng màn hình Turtle vào trong cửa sổ Tkinter thay vì bật ra cửa sổ riêng.
+          Phải (right_frame): Chứa Canvas. Đây sẽ là nơi hiển thị đồ thị và quá trình được tô màu.
 - Các hàm xử lý dữ liệu:
-+ load_file: Mở hộp thoại chọn file .txt từ máy tính, sau đó gọi hàm đọc ma trận.
++ load_file: Mở hộp thoại chọn file .txt từ máy tính, sau đó gọi hàm đọc ma trận.          
 + update_graph_data:
           Nhận ma trận, tính toán danh sách đỉnh (A, B, C...) và bậc của từng đỉnh (tổng các số 1 trong hàng).
           Xóa dữ liệu cũ trên bảng và màn hình vẽ.
