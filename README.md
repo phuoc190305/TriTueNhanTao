@@ -103,5 +103,7 @@ Bước 4: Kết thúc: Thông báo "Đã tô màu xong".
 + Thuật giải tô màu đồ thị (Update 2) - Đọc/xuất file txt, có thể chỉnh sửa ma trận trực tiếp
 <img width="994" height="658" alt="image" src="https://github.com/user-attachments/assets/2ef160f6-f0d8-4a8c-87a9-56c0e9db6fa0" />
 <img width="677" height="758" alt="image" src="https://github.com/user-attachments/assets/e9eca4a2-47c6-4ad5-aeab-c7ef648cb6c3" />
++ TSP
+<img width="1015" height="671" alt="image" src="https://github.com/user-attachments/assets/1846461e-86cd-4a9c-8115-25aea52a2048" />
 
   
