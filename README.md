@@ -39,3 +39,14 @@ Khi nên dùng	Mặc định — dễ cài, đủ nhanh cho 3×3	Dùng nếu mu�
 Phức tạp cài đặt	Rất đơn giản	Thêm 2 tham số alpha, beta + kiểm tra điều kiện cắt tỉa
 Lợi ích thực tế	Tốt cho học/giải bài tập, demo AI	Ít lợi cho 3×3; hữu ích khi nâng lên bàn lớn hoặc muốn giảm thời gian thực thi tối đa
 
+--Output kết quả chạy
++ Thuật giải Akt với bài toán (8 puzzle) n = 3
+<img width="118" height="322" alt="image" src="https://github.com/user-attachments/assets/066afb23-e290-4530-a1a3-dc4c91655aff" />
+
++ Thuật giải A* với bài toán đồ thị
+<img width="352" height="49" alt="image" src="https://github.com/user-attachments/assets/2cf9eabc-ccdb-43fe-857f-30547afc2f33" />
+
+
++ Thuật giải A* với bài toán đồ thị (Update)
+<img width="353" height="139" alt="image" src="https://github.com/user-attachments/assets/ea537782-bf0b-43b4-829e-1ee2f038ba8c" />
+
